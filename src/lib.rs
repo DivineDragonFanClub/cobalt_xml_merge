@@ -14,7 +14,7 @@ pub fn read_into_lines(path: &str) -> Vec<String> {
 
 pub fn two_d_array_merge<'a>(base: &str, patches: &[&str]) -> Vec<String> {
     let lhs = read_into_lines(base);
-    let mut lines_2d = lhs.iter().map(|line| VecDeque::from([line.to_owned()])).collect::<Vec<_>>();
+    let mut lines_2d = lhs.iter().map(|line| VecDeque::from([line.clone()])).collect::<Vec<_>>();
     lines_2d.push(VecDeque::new()); // end of file appended lines will be stored here
     let mut is_deleted = HashSet::new(); // keep track of deleted indices
 
