@@ -7,7 +7,7 @@ use differ::{Differ, Tag};
 mod tests;
 
 
-pub fn read_into_lines(path: &str) -> Vec<String> {
+fn read_into_lines(path: &str) -> Vec<String> {
     let file = std::fs::read_to_string(path).unwrap();
     file.lines().map(|s| s.to_owned()).collect::<Vec<_>>()
 }
