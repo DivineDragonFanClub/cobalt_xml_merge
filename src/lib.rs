@@ -12,21 +12,24 @@ pub fn read_into_lines(path: &str) -> Vec<String> {
     file.lines().map(|s| s.to_owned()).collect::<Vec<_>>()
 }
 
-pub fn two_d_array_merge<'a>(lhs: &'a [String], patches: &'a [&[String]]) -> Vec<&'a str> {
+pub fn two_d_array_merge<'a>(base: &str, patches: &[&str]) -> Vec<String> {
 
-    let mut lines_2d = lhs.iter().map(|line| VecDeque::from([line.as_str()])).collect::<Vec<_>>();
+    let lhs = read_into_lines(base);
+
+    let mut lines_2d = lhs.iter().map(|line| VecDeque::from([line.to_owned()])).collect::<Vec<_>>();
     lines_2d.push(VecDeque::new()); 
     let mut is_deleted = HashSet::new(); // keep track of deleted indices
 
-    for rhs in patches {
-        let differ = Differ::new(lhs, &rhs);
+    for path in patches {
+        let rhs = read_into_lines(path);
+        let differ = Differ::new(&lhs, &rhs);
         for span in differ.spans() {
             match span.tag {
                 // Tag::Equal => print_lines('=', &original[span.a_start..span.a_end]),
                 Tag::Insert => {
                     let entry = lines_2d.get_mut(span.a_start).expect("out of bounds");
                     for e in rhs[span.b_start..span.b_end].iter().rev() {
-                        entry.push_front(e);
+                        entry.push_front(e.clone());
                     }
                 }
                 Tag::Delete => {
@@ -48,7 +51,7 @@ pub fn two_d_array_merge<'a>(lhs: &'a [String], patches: &'a [&[String]]) -> Vec
                     // append replacing lines after insertions
                     let entry = lines_2d.get_mut(span.a_start).expect("out of bounds");
                     for e in rhs[span.b_start..span.b_end].iter() {
-                        entry.push_back(e);
+                        entry.push_back(e.clone());
                     }
                 }
                 _ => {}
