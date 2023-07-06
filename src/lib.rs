@@ -12,7 +12,7 @@ pub fn read_into_lines(path: &str) -> Vec<String> {
     file.lines().map(|s| s.to_owned()).collect::<Vec<_>>()
 }
 
-pub fn apply_patches<'a>(lhs: &'a [String], patches: &'a [&[String]]) -> Vec<&'a str> {
+pub fn two_d_array_merge<'a>(lhs: &'a [String], patches: &'a [&[String]]) -> Vec<&'a str> {
 
     let mut lines_2d = lhs.iter().map(|line| VecDeque::from([line.as_str()])).collect::<Vec<_>>();
     lines_2d.push(VecDeque::new()); 

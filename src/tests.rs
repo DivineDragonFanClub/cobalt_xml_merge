@@ -9,7 +9,7 @@ fn boamo() {
     let original = original();
     let boamo = read_into_lines(r"test_files\AssetTable\Boamo.xml");
     let patches = vec![&boamo[..]];
-    let merged = apply_patches(&original, &patches);
+    let merged = two_d_array_merge(&original, &patches);
     assert!(merged == boamo);
 }
 
@@ -18,7 +18,7 @@ fn playableboss() {
     let original = original();
     let playableboss = read_into_lines(r"test_files\AssetTable\PlayableBoss.xml");
     let patches = vec![&playableboss[..]];
-    let merged = apply_patches(&original, &patches);
+    let merged = two_d_array_merge(&original, &patches);
     assert!(merged == playableboss);
 }
 
@@ -28,7 +28,7 @@ fn boamo_playableboss() {
     let boamo = read_into_lines(r"test_files\AssetTable\Boamo.xml");
     let playableboss = read_into_lines(r"test_files\AssetTable\PlayableBoss.xml");
     let patches = vec![&boamo[..], &playableboss[..]];
-    let merged = apply_patches(&original, &patches);
+    let merged = two_d_array_merge(&original, &patches);
     let example = read_into_lines(r"test_files\AssetTable\examples\Boamo_PlayableBoss.xml");
     assert!(merged == example);
 }

@@ -1,6 +1,6 @@
 # Cobalt XML Merge
 
-This contains test cases for Cobalt XML merging.
+This contains test cases and algorithms for Cobalt XML merging.
 
 # Contribute
 
