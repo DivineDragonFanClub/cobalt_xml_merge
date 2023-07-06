@@ -13,11 +13,9 @@ pub fn read_into_lines(path: &str) -> Vec<String> {
 }
 
 pub fn two_d_array_merge<'a>(base: &str, patches: &[&str]) -> Vec<String> {
-
     let lhs = read_into_lines(base);
-
     let mut lines_2d = lhs.iter().map(|line| VecDeque::from([line.to_owned()])).collect::<Vec<_>>();
-    lines_2d.push(VecDeque::new()); 
+    lines_2d.push(VecDeque::new()); // end of file appended lines will be stored here
     let mut is_deleted = HashSet::new(); // keep track of deleted indices
 
     for path in patches {
@@ -25,7 +23,7 @@ pub fn two_d_array_merge<'a>(base: &str, patches: &[&str]) -> Vec<String> {
         let differ = Differ::new(&lhs, &rhs);
         for span in differ.spans() {
             match span.tag {
-                // Tag::Equal => print_lines('=', &original[span.a_start..span.a_end]),
+                // the lowest entry will be the first mod in the list
                 Tag::Insert => {
                     let entry = lines_2d.get_mut(span.a_start).expect("out of bounds");
                     for e in rhs[span.b_start..span.b_end].iter().rev() {
@@ -40,6 +38,8 @@ pub fn two_d_array_merge<'a>(base: &str, patches: &[&str]) -> Vec<String> {
                         is_deleted.insert(i);
                     }
                 }
+                // as is, mods modifying the same line will duplicate
+                // the lowest entry will be from the last mod in the list
                 Tag::Replace => {
                     for i in span.a_start..span.a_end {
                         if is_deleted.get(&i).is_some() { continue; }
