@@ -1,4 +1,4 @@
-use std::collections::{VecDeque, HashSet};
+use std::{collections::{VecDeque, HashSet}, rc::Rc};
 
 use differ::{Differ, Tag};
 
@@ -6,13 +6,14 @@ use differ::{Differ, Tag};
 #[cfg(test)]
 mod tests;
 
+type Line = Rc<str>;
 
-pub fn read_into_lines(path: &str) -> Vec<String> {
+pub fn read_into_lines(path: &str) -> Vec<Line> {
     let file = std::fs::read_to_string(path).unwrap();
-    file.lines().map(|s| s.to_owned()).collect::<Vec<_>>()
+    file.lines().map(|s| Rc::from(s)).collect::<Vec<_>>()
 }
 
-pub fn two_d_array_merge(base: &str, patches: &[&str]) -> Vec<String> {
+pub fn two_d_array_merge(base: &str, patches: &[&str]) -> Vec<Line> {
     let base = read_into_lines(base);
     let mut lines_2d = base.iter().map(|line| VecDeque::from([line.clone()])).collect::<Vec<_>>();
     lines_2d.push(VecDeque::new()); // end of file appended lines will be stored here
@@ -29,7 +30,7 @@ pub fn two_d_array_merge(base: &str, patches: &[&str]) -> Vec<String> {
     lines_2d.into_iter().flatten().collect()
 }
 
-fn apply_diff(span: differ::Span, lines_2d: &mut Vec<VecDeque<String>>, rhs: &[String], is_deleted: &mut HashSet<usize>) {
+fn apply_diff(span: differ::Span, lines_2d: &mut Vec<VecDeque<Line>>, rhs: &[Line], is_deleted: &mut HashSet<usize>) {
     match span.tag {
         Tag::Insert => insert(lines_2d, &span, rhs),
         Tag::Delete => delete(&span, is_deleted, lines_2d),
@@ -40,7 +41,7 @@ fn apply_diff(span: differ::Span, lines_2d: &mut Vec<VecDeque<String>>, rhs: &[S
     return;
 
     /// deletes original lines within a span
-    fn delete(span: &differ::Span, is_deleted: &mut HashSet<usize>, lines_2d: &mut [VecDeque<String>]) {
+    fn delete(span: &differ::Span, is_deleted: &mut HashSet<usize>, lines_2d: &mut [VecDeque<Line>]) {
         for i in span.a_start..span.a_end {
             if is_deleted.get(&i).is_some() { continue; }
             let entry = lines_2d.get_mut(i).expect("out of bounds");
@@ -54,7 +55,7 @@ fn apply_diff(span: differ::Span, lines_2d: &mut Vec<VecDeque<String>>, rhs: &[S
     /// insertion order is:
     /// 
     /// `[mod3, mod2, mod1, original]`
-    fn insert(lines_2d: &mut [VecDeque<String>], span: &differ::Span, rhs: &[String]) {
+    fn insert(lines_2d: &mut [VecDeque<Line>], span: &differ::Span, rhs: &[Line]) {
         let entry = lines_2d.get_mut(span.a_start).expect("out of bounds");
         for e in rhs[span.b_start..span.b_end].iter().rev() {
             entry.push_front(e.clone());
@@ -67,7 +68,7 @@ fn apply_diff(span: differ::Span, lines_2d: &mut Vec<VecDeque<String>>, rhs: &[S
     /// insertion order is:
     /// 
     /// `[original, mod1, mod2, mod3]`
-    fn replace(span: differ::Span, is_deleted: &mut HashSet<usize>, lines_2d: &mut [VecDeque<String>], rhs: &[String]) {
+    fn replace(span: differ::Span, is_deleted: &mut HashSet<usize>, lines_2d: &mut [VecDeque<Line>], rhs: &[Line]) {
         delete(&span, is_deleted, lines_2d);
 
         // append replacing lines after insertions
