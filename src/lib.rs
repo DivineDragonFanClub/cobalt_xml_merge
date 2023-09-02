@@ -7,7 +7,7 @@ use differ::{Differ, Tag};
 mod tests;
 
 
-fn read_into_lines(path: &str) -> Vec<String> {
+pub fn read_into_lines(path: &str) -> Vec<String> {
     let file = std::fs::read_to_string(path).unwrap();
     file.lines().map(|s| s.to_owned()).collect::<Vec<_>>()
 }
@@ -31,18 +31,15 @@ pub fn two_d_array_merge(base: &str, patches: &[&str]) -> Vec<String> {
 
 fn apply_diff(span: differ::Span, lines_2d: &mut Vec<VecDeque<String>>, rhs: &[String], is_deleted: &mut HashSet<usize>) {
     match span.tag {
-        // the lowest entry will be the first mod in the list
         Tag::Insert => insert(lines_2d, &span, rhs),
-        //
         Tag::Delete => delete(&span, is_deleted, lines_2d),
-        // as is, mods modifying the same line will duplicate
-        // the lowest entry will be from the last mod in the list
         Tag::Replace => replace(span, is_deleted, lines_2d, rhs),
         _ => {}
     }
 
     return;
 
+    /// deletes original lines within a span
     fn delete(span: &differ::Span, is_deleted: &mut HashSet<usize>, lines_2d: &mut [VecDeque<String>]) {
         for i in span.a_start..span.a_end {
             if is_deleted.get(&i).is_some() { continue; }
@@ -52,6 +49,11 @@ fn apply_diff(span: differ::Span, lines_2d: &mut Vec<VecDeque<String>>, rhs: &[S
         }
     }
 
+    /// the lowest entry will be the first mod in the list
+    /// 
+    /// insertion order is:
+    /// 
+    /// `[mod3, mod2, mod1, original]`
     fn insert(lines_2d: &mut [VecDeque<String>], span: &differ::Span, rhs: &[String]) {
         let entry = lines_2d.get_mut(span.a_start).expect("out of bounds");
         for e in rhs[span.b_start..span.b_end].iter().rev() {
@@ -59,6 +61,12 @@ fn apply_diff(span: differ::Span, lines_2d: &mut Vec<VecDeque<String>>, rhs: &[S
         }
     }
 
+    /// as is, mods modifying the same line will duplicate
+    /// 
+    /// the lowest entry will be from the last mod in the list
+    /// insertion order is:
+    /// 
+    /// `[original, mod1, mod2, mod3]`
     fn replace(span: differ::Span, is_deleted: &mut HashSet<usize>, lines_2d: &mut [VecDeque<String>], rhs: &[String]) {
         delete(&span, is_deleted, lines_2d);
 
