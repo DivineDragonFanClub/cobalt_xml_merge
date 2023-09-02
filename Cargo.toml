@@ -7,3 +7,10 @@ edition = "2021"
 
 [dependencies]
 differ = "1"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "merge_benchmark"
+harness = false
