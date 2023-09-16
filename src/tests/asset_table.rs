@@ -61,3 +61,22 @@ fn boamo_playableboss() {
     let boamo_playableboss = read_fs_into_strs("test_files/AssetTable/examples/Boamo_Playableboss.xml");
     assert!(merged == boamo_playableboss);
 }
+
+#[test]
+fn boamo_siegfried() {
+    let path_patches = [
+        "test_files/AssetTable/Boamo2.xml",
+        "test_files/AssetTable/Siegfried.xml"
+    ];
+    let patches = path_patches.iter().map(|path| std::fs::read_to_string(path).unwrap()).collect::<Vec<_>>();
+
+    let mut merger = Merger::new(&*ASSET_TABLE);
+
+    for patch in &patches {
+        merger.patch(&patch);
+    }
+
+    let merged = merger.finalize();
+    let boamo_playableboss = read_fs_into_strs("test_files/AssetTable/examples/Boamo_Siegfried.xml");
+    assert!(merged == boamo_playableboss);
+}
