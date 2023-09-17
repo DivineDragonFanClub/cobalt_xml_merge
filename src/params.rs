@@ -4,6 +4,7 @@ use std::rc::Rc;
 pub struct ParamMerger {
     default: Vec<(Rc<str>, Rc<str>)>,
     merged: Vec<(Rc<str>, Rc<str>)>,
+    tag: Rc<str>,
 }
 
 impl ParamMerger { 
@@ -19,9 +20,11 @@ impl ParamMerger {
             default.push((name.into(), value.into()));
         }
         let merged = default.clone();
+        let tag = doc.root_element().tag_name().name().into();
         Self {
             default,
             merged,
+            tag,
         }
     }
 
@@ -41,11 +44,12 @@ impl ParamMerger {
 
     pub fn to_string(&self) -> String {
         let mut output = String::new();
-        output.push_str("<Param ");
+        output.push_str("<");
+        output.push_str(&self.tag);
         for (name, value) in &self.merged {
-            output.push_str(&format!("{}=\"{}\" ", name, value));
+            output.push_str(&format!(" {}=\"{}\"", name, value));
         }
-        output.push_str("/>");
+        output.push_str(" />");
         output
     }
 }
