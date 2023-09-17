@@ -37,14 +37,14 @@ impl<'xml> Line<'xml> {
 
     /// Converts the line into a hunk of lines.
     /// 
-    /// `[front1, front2, front3, original, back1, back2, back3]`
+    /// `[front3, front2, front1, original, back3, back2, back1]`
     /// 
     /// meaning both appending and prepending retains the mod loading order
     pub fn to_hunk(self) -> Vec<XmlLine<'xml>> {
         let mut hunk = Vec::with_capacity(
             self.front.len() + self.back.len() + 1
         );
-        for line in self.front.into_iter() {
+        for line in self.front.into_iter().rev() {
             if line.deleted { continue; }
             hunk.push(line.data);
         }
@@ -56,11 +56,23 @@ impl<'xml> Line<'xml> {
                 hunk.push(self.data);
             }
         }
-        for line in self.back.into_iter() {
+        for line in self.back.into_iter().rev() {
             if line.deleted { continue; }
             hunk.push(line.data);
         }
         hunk
+    }
+
+    pub fn insert_above(&mut self, lines: &[Line<'xml>]) {
+        for line in lines.iter().rev() {
+            self.front.push(line.clone());
+        }
+    }
+
+    pub fn insert_below(&mut self, lines: &[Line<'xml>]) {
+        for line in lines.iter().rev() {
+            self.back.push(line.clone());
+        }
     }
 
     pub fn patch_params(&mut self, patch: &Line) {

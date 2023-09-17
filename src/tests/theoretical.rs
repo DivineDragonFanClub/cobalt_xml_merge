@@ -40,8 +40,8 @@ fn pre_append_sameline() {
 
     assert!(merger.finalize_string() == Merger::new(r#"
         <AssetTable>
-            <Param Name="Alear" Type="Protag" Path="0" />
             <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
+            <Param Name="Alear" Type="Protag" Path="0" />
             <Param Name="Vander" Type="Jagen" Path="1" />
             <Param Name="Framme" Type="monk" Path="2" />
             <Param Name="Clanne" Type="mage" Path="3" />
@@ -102,8 +102,8 @@ fn pre_append_sameline_empty_lines() {
 
     assert!(merger.finalize_string() == Merger::new(r#"
         <AssetTable>
-            <Param Name="Alear" Type="Protag" Path="0" />
             <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
+            <Param Name="Alear" Type="Protag" Path="0" />
             <Param Name="Vander" Type="Jagen" Path="1" />
             <Param Name="Framme" Type="monk" Path="2" />
             <Param Name="Clanne" Type="mage" Path="3" />

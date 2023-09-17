@@ -37,7 +37,7 @@ impl<'xml> Merger<'xml> {
             match span.tag {
                 Tag::Insert => {
                     let line = &mut self.merge_arena[span.a_start];
-                    line.front.extend_from_slice(&patch[span.b_start..span.b_end]);
+                    line.insert_above(&patch[span.b_start..span.b_end]);
                 },
                 Tag::Delete => {
                     self.merge_arena[span.a_start..span.a_end].iter_mut().for_each(|line| line.deleted = true);
@@ -56,8 +56,8 @@ impl<'xml> Merger<'xml> {
                     match Ord::cmp(&a_len, &b_len) {
                         // append to the end of a
                         Ordering::Less => {
-                            let line = &mut self.merge_arena[span.a_end];
-                            line.back.extend_from_slice(&patch[span.b_start+a_len..span.b_end]);
+                            let line = &mut self.merge_arena[span.a_end-1];
+                            line.insert_below(&patch[span.b_start+a_len..span.b_end]);
                         },
                         // delete trailing a lines
                         Ordering::Greater => {
