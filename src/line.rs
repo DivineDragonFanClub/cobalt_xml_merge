@@ -1,12 +1,13 @@
-use crate::XmlLine;
+use crate::{XmlLine, params::ParamMerger};
 
-#[derive(Eq, Clone)]
+#[derive(Eq, Clone, Debug)]
 pub struct Line<'xml> {
     data: XmlLine<'xml>,
     pub deleted: bool,
     checksum: u32,
     pub front: Vec<Line<'xml>>,
-    pub back: Vec<Line<'xml>>
+    pub back: Vec<Line<'xml>>,
+    replace: Option<ParamMerger>
 }
 
 impl<'xml> Line<'xml> {
@@ -17,7 +18,8 @@ impl<'xml> Line<'xml> {
             deleted: true,
             checksum: 0,
             front: Vec::new(),
-            back: Vec::new()
+            back: Vec::new(),
+            replace: None
         }
     }
     /// trims whitespace from the input
@@ -28,7 +30,8 @@ impl<'xml> Line<'xml> {
             deleted: false,
             checksum,
             front: Vec::new(),
-            back: Vec::new()
+            back: Vec::new(),
+            replace: None
         }
     }
 
@@ -46,13 +49,23 @@ impl<'xml> Line<'xml> {
             hunk.push(line.data);
         }
         if !self.deleted {
-            hunk.push(self.data);
+            if let Some(replace) = self.replace {
+                let new = replace.to_string();
+                hunk.push(new.into());
+            } else {
+                hunk.push(self.data);
+            }
         }
         for line in self.back.into_iter() {
             if line.deleted { continue; }
             hunk.push(line.data);
         }
         hunk
+    }
+
+    pub fn patch_params(&mut self, patch: &Line) {
+        self.replace.get_or_insert(ParamMerger::new(&self.data));
+        self.replace.as_mut().map(|replace| replace.patch(&patch.data));
     }
 }
 

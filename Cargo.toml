@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 crc32fast = "1"
 differ = "1"
+roxmltree = { version = "0.18" }
 
 [dev-dependencies]
 criterion = "0.5"

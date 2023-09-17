@@ -4,31 +4,31 @@ use crate::*;
 fn pre_append_sameline() {
     let base = r#"
         <AssetTable>
-            <Asset Name="Vander" Type="Jagen" Path="1" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
         "#;
     let patches = &[
         r#"
         <AssetTable>
-            <Asset Name="Alear" Type="Protag" Path="0" />
-            <Asset Name="Vander" Type="Jagen" Path="1" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Alear" Type="Protag" Path="0" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
         "#,
         r#"
         <AssetTable>
-            <Asset Name="Veyle" Type="ProtagAlt" Path="0.1" />
-            <Asset Name="Vander" Type="Jagen" Path="1" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
         "#,
         r#"
         <AssetTable>
-            <Asset Name="Vander" Type="Jagen" Path="1" />
-            <Asset Name="Framme" Type="monk" Path="2" />
-            <Asset Name="Clanne" Type="mage" Path="3" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Framme" Type="monk" Path="2" />
+            <Param Name="Clanne" Type="mage" Path="3" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
         "#,
     ];
@@ -40,12 +40,12 @@ fn pre_append_sameline() {
 
     assert!(merger.finalize_string() == Merger::new(r#"
         <AssetTable>
-            <Asset Name="Alear" Type="Protag" Path="0" />
-            <Asset Name="Veyle" Type="ProtagAlt" Path="0.1" />
-            <Asset Name="Vander" Type="Jagen" Path="1" />
-            <Asset Name="Framme" Type="monk" Path="2" />
-            <Asset Name="Clanne" Type="mage" Path="3" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Alear" Type="Protag" Path="0" />
+            <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Framme" Type="monk" Path="2" />
+            <Param Name="Clanne" Type="mage" Path="3" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
     "#).finalize_string());
 }
@@ -57,27 +57,27 @@ fn pre_append_sameline_empty_lines() {
 
         <AssetTable>
 
-            <Asset Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
 
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Morb" Type="Goat" Path="69" />
 
         </AssetTable>
         "#;
     let patches = &[
         r#"
         <AssetTable>
-            <Asset Name="Alear" Type="Protag" Path="0" />
+            <Param Name="Alear" Type="Protag" Path="0" />
 
 
-            <Asset Name="Vander" Type="Jagen" Path="1" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
         "#,
         r#"
         <AssetTable>
-            <Asset Name="Veyle" Type="ProtagAlt" Path="0.1" />
-            <Asset Name="Vander" Type="Jagen" Path="1" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Morb" Type="Goat" Path="69" />
 
         </AssetTable>
 
@@ -85,12 +85,12 @@ fn pre_append_sameline_empty_lines() {
         "#,
         r#"
         <AssetTable>
-            <Asset Name="Vander" Type="Jagen" Path="1" />
-            <Asset Name="Framme" Type="monk" Path="2" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Framme" Type="monk" Path="2" />
 
 
-            <Asset Name="Clanne" Type="mage" Path="3" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Clanne" Type="mage" Path="3" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
         "#,
     ];
@@ -102,44 +102,44 @@ fn pre_append_sameline_empty_lines() {
 
     assert!(merger.finalize_string() == Merger::new(r#"
         <AssetTable>
-            <Asset Name="Alear" Type="Protag" Path="0" />
-            <Asset Name="Veyle" Type="ProtagAlt" Path="0.1" />
-            <Asset Name="Vander" Type="Jagen" Path="1" />
-            <Asset Name="Framme" Type="monk" Path="2" />
-            <Asset Name="Clanne" Type="mage" Path="3" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Alear" Type="Protag" Path="0" />
+            <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
+            <Param Name="Vander" Type="Jagen" Path="1" />
+            <Param Name="Framme" Type="monk" Path="2" />
+            <Param Name="Clanne" Type="mage" Path="3" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
     "#).finalize_string());
 }
 
 #[test]
-fn same_line_delte() {
+fn same_line_delete() {
     let base = r#"
     <AssetTable>
-        <Asset Name="Alear" Type="Protag" Path="0" />
-        <Asset Name="Veyle" Type="ProtagAlt" Path="0.1" />
-        <Asset Name="Vander" Type="Jagen" Path="1" />
-        <Asset Name="Framme" Type="monk" Path="2" />
-        <Asset Name="Clanne" Type="mage" Path="3" />
-        <Asset Name="Morb" Type="Goat" Path="69" />
+        <Param Name="Alear" Type="Protag" Path="0" />
+        <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
+        <Param Name="Vander" Type="Jagen" Path="1" />
+        <Param Name="Framme" Type="monk" Path="2" />
+        <Param Name="Clanne" Type="mage" Path="3" />
+        <Param Name="Morb" Type="Goat" Path="69" />
     </AssetTable>"#;
     let patches = &[
         r#"
         <AssetTable>
-            <Asset Name="Alear" Type="Protag" Path="0" />
-            <Asset Name="Griss" Type="Maso" Path="0.2" />
-            <Asset Name="Framme" Type="monk" Path="2" />
-            <Asset Name="Clanne" Type="mage" Path="3" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Alear" Type="Protag" Path="0" />
+            <Param Name="Griss" Type="Maso" Path="0.2" />
+            <Param Name="Framme" Type="monk" Path="2" />
+            <Param Name="Clanne" Type="mage" Path="3" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
         "#,
         r#"
         <AssetTable>
-            <Asset Name="Alear" Type="Protag" Path="0" />
-            <Asset Name="Veyle" Type="ProtagAlt" Path="0.1" />
-            <Asset Name="Framme" Type="monk" Path="2" />
-            <Asset Name="Clanne" Type="mage" Path="3" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Alear" Type="Protag" Path="0" />
+            <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
+            <Param Name="Framme" Type="monk" Path="2" />
+            <Param Name="Clanne" Type="mage" Path="3" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
         "#
     ];
@@ -150,11 +150,11 @@ fn same_line_delte() {
     }
     assert!(merger.finalize_string() == Merger::new(r#"
         <AssetTable>
-            <Asset Name="Alear" Type="Protag" Path="0" />
-            <Asset Name="Griss" Type="Maso" Path="0.2" />
-            <Asset Name="Framme" Type="monk" Path="2" />
-            <Asset Name="Clanne" Type="mage" Path="3" />
-            <Asset Name="Morb" Type="Goat" Path="69" />
+            <Param Name="Alear" Type="Protag" Path="0" />
+            <Param Name="Griss" Type="Maso" Path="0.2" />
+            <Param Name="Framme" Type="monk" Path="2" />
+            <Param Name="Clanne" Type="mage" Path="3" />
+            <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
         "#).finalize_string());
 }
