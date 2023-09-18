@@ -105,26 +105,36 @@ enum Tag {
     Empty,
 }
 
-fn get_tag<'a>(line: &'a str) -> (Tag, Cow<'a, str>) {
-    // </Data>
-    if line.starts_with("</") {
-        // return inbetween </ and >
-        return (Tag::Closing, Cow::Borrowed(&line[2..line.len() - 1].trim()));
+impl Tag {
+    /// make sure input is trimmed
+    pub fn from(input: &str) -> Self {
+        // </Data>
+        if input.starts_with("</"){
+            return Self::Closing
+        }
+        if input.ends_with("/>") {
+            return Self::Empty
+        }
+        return Self::Opening
     }
-
-    // <Data/>
-    let is_empty_element_tag = line.ends_with("/>");
-    // replace > at the end with /> to make it's an empty element tag
-    let line = if is_empty_element_tag {
-        line.to_owned()
-    } else {
-        line[..line.len() - 1].to_owned() + "/>"
-    };
-
-    // <Data>
-    if line.starts_with("<") && !is_empty_element_tag {
-        return (Tag::Opening, Cow::Owned(line));
-    }
-    (Tag::Empty, Cow::Owned(line))
 }
 
+fn get_tag<'a>(line: &'a str) -> (Tag, Cow<'a, str>) {
+    let tag = Tag::from(line); 
+    match tag {
+        // </Data>
+        Tag::Closing => {
+            // return inbetween </ and >
+            return (tag, Cow::Borrowed(&line[2..line.len() - 1].trim()));
+        }
+        // <Param />
+        Tag::Empty => {
+            return (tag, Cow::Borrowed(line));
+        }
+        // <Header>
+        Tag::Opening => {
+            // into <Header/> so it can be parsed
+            return (tag, Cow::Owned(line[..line.len() - 1].to_owned() + "/>"));
+        }
+    }
+}
