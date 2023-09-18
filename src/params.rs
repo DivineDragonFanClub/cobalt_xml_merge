@@ -134,6 +134,7 @@ fn get_tag<'a>(line: &'a str) -> (Tag, Cow<'a, str>) {
         // <Header>
         Tag::Opening => {
             // into <Header/> so it can be parsed
+            // cloning is fine because it's a small string and a rare case
             return (tag, Cow::Owned(line[..line.len() - 1].to_owned() + "/>"));
         }
     }
