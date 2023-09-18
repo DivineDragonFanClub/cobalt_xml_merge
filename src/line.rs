@@ -68,7 +68,7 @@ impl<'xml> Line<'xml> {
             self.front.push(line.clone());
         }
     }
-
+    
     pub fn insert_below(&mut self, lines: &[Line<'xml>]) {
         for line in lines.iter().rev() {
             self.back.push(line.clone());
