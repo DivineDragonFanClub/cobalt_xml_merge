@@ -1,6 +1,6 @@
 use crate::*;
 
-const BASE_PATH: &str = "test_files/shop/!original.xml";
+const BASE_PATH: &str = "test_files/Shop/!original.xml";
 
 lazy_static::lazy_static! {
     static ref BASE: String = std::fs::read_to_string(BASE_PATH).unwrap();
