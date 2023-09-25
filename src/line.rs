@@ -96,7 +96,9 @@ impl PartialEq for Line<'_> {
         if self.checksum == other.checksum { return true }
         
         if self.data.len() != other.data.len() { return false };
-    
-        return self.data == other.data;
+
+        // really time consuming, leaving this out even for the case of collisions ig
+        // return self.data == other.data;
+        return false;
     }
 }
