@@ -76,6 +76,10 @@ impl<'xml> Line<'xml> {
     }
 
     pub fn patch_params(&mut self, patch: &Line) {
+        // skip <?xml ?> edge cases
+        if self.data.starts_with("<?") {
+            return;
+        }
         self.replace.get_or_insert_with(|| ParamMerger::new(&self.data));
         self.replace.as_mut().map(|replace| replace.patch(&patch.data));
     }
