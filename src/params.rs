@@ -16,7 +16,7 @@ impl ParamMerger {
             Tag::Closing => Self {
                 default: vec![],
                 merged: vec![],
-                tag_name: line.into(),
+                tag_name: line.into(), // in this case line is just the tag name
                 tag_type,
             },
             _ => {
