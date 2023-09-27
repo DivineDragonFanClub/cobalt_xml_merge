@@ -125,7 +125,7 @@ fn get_tag<'a>(line: &'a str) -> (Tag, Cow<'a, str>) {
         // </Data>
         Tag::Closing => {
             // return inbetween </ and >
-            return (tag, Cow::Borrowed(&line[2..line.len() - 1].trim()));
+            return (tag, Cow::Borrowed(line.trim_start_matches("</").trim_end_matches(">").trim()));
         }
         // <Param />
         Tag::Empty => {
@@ -135,7 +135,7 @@ fn get_tag<'a>(line: &'a str) -> (Tag, Cow<'a, str>) {
         Tag::Opening => {
             // into <Header/> so it can be parsed
             // cloning is fine because it's a small string and a rare case
-            return (tag, Cow::Owned(line[..line.len() - 1].to_owned() + "/>"));
+            return (tag, Cow::Owned(line.trim_end_matches(">").to_owned() + "/>"));
         }
     }
 }
