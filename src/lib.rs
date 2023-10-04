@@ -36,7 +36,10 @@ fn slice<'a, T>(s: &'a str, map: impl Fn(&'a str) -> T) -> Vec<T> {
     for slice in lines {
         let s = slice.trim();
         if s.is_empty() { continue };
-        v.push(map(s));
+        if s.starts_with("<!") { continue }; // skip comments
+        if s.starts_with("<") {
+            v.push(map(s));
+        };
     }
     v
 }
