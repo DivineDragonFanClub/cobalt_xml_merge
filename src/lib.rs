@@ -31,10 +31,11 @@ pub fn merge_all<T: AsRef<str>>(base: T, patches: &[T]) -> String {
 
 #[inline]
 fn slice<'a, T>(s: &'a str, map: impl Fn(&'a str) -> T) -> Vec<T> {
-    let lines = s.split_inclusive(">\n");
+    let lines = s.lines();
     let mut v = Vec::with_capacity(lines.size_hint().0); // hint size to avoid some reallocations
     for slice in lines {
         let s = slice.trim();
+        let s = s.trim_start_matches(|c| c != '<');
         if s.is_empty() { continue };
         if s.starts_with("<!") { continue }; // skip comments
         if s.starts_with("<") {
