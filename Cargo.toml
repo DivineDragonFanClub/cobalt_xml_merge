@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 crc32fast = "1"
 differ = "1"
+quick-xml = "^0.30"
+anyhow = "1"
 
 [dev-dependencies]
 criterion = "0.5"
