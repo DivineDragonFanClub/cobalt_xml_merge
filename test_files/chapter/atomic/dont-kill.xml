@@ -1,0 +1,27 @@
+<!DOCTYPE cobalt>
+<edit line="71">
+    <!-- Cid listed just for orientation but are just default values, 
+        rest is left out since it's not edited-->
+    <!-- set falgs from 5 to 315 for no kill -->
+    <Param Cid="CID_S003" Flag="315"/>
+    <Param Cid="CID_S004" Flag="315"/>
+    <Param Cid="CID_S005" Flag="315"/>
+    <Param Cid="CID_S006" Flag="315"/>
+    <Param Cid="CID_S007" Flag="315"/>
+    <Param Cid="CID_S008" Flag="315"/>
+    <Param Cid="CID_S009" Flag="315"/>
+    <Param Cid="CID_S010" Flag="315"/>
+    <Param Cid="CID_S011" Flag="315"/>
+    <Param Cid="CID_S012" Flag="315"/>
+    <Param Cid="CID_S013" Flag="315"/>
+    <Param Cid="CID_S014" Flag="315"/>
+</edit>
+
+<edit line="122">
+    <Param Cid="CID_G001" Flag="315" />
+    <Param Cid="CID_G002" Flag="315" />
+    <Param Cid="CID_G003" Flag="315" />
+    <Param Cid="CID_G004" Flag="315" />
+    <Param Cid="CID_G005" Flag="315" />
+    <Param Cid="CID_G006" Flag="315" />
+</edit>
