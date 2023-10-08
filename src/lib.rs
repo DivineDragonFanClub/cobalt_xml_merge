@@ -68,7 +68,7 @@ pub fn read_fs_into_strs<'a>(path: impl AsRef<str>) -> Vec<String> {
 /// Merges a base string with a patch string.
 /// 
 /// Trims whitespace on each line.
-pub fn merge_all<T: AsRef<str>>(base: T, patches: &[T]) -> String {
+pub fn merge_all(base: impl AsRef<str>, patches: &[impl AsRef<str>]) -> String {
     let mut merger = Merger::new(base.as_ref());
     for patch in patches {
         merger.patch(patch.as_ref());
