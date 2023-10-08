@@ -1,4 +1,4 @@
-use crate::{XmlLine, params::ParamMerger};
+use crate::*;
 
 #[derive(Eq, Clone, Debug)]
 pub struct Line<'xml> {
@@ -7,7 +7,6 @@ pub struct Line<'xml> {
     checksum: u32,
     pub front: Vec<Line<'xml>>,
     pub back: Vec<Line<'xml>>,
-    replace: Option<ParamMerger>
 }
 
 impl<'xml> Line<'xml> {
@@ -19,7 +18,6 @@ impl<'xml> Line<'xml> {
             checksum: 0,
             front: Vec::new(),
             back: Vec::new(),
-            replace: None
         }
     }
     /// trims whitespace from the input
@@ -31,7 +29,6 @@ impl<'xml> Line<'xml> {
             checksum,
             front: Vec::new(),
             back: Vec::new(),
-            replace: None
         }
     }
 
@@ -49,12 +46,7 @@ impl<'xml> Line<'xml> {
             hunk.push(line.data);
         }
         if !self.deleted {
-            if let Some(replace) = self.replace {
-                let new = replace.to_string();
-                hunk.push(new.into());
-            } else {
-                hunk.push(self.data);
-            }
+            hunk.push(self.data);
         }
         for line in self.back.into_iter().rev() {
             if line.deleted { continue; }
@@ -73,15 +65,6 @@ impl<'xml> Line<'xml> {
         for line in lines.iter().rev() {
             self.back.push(line.clone());
         }
-    }
-
-    pub fn patch_params(&mut self, patch: &Line) {
-        // skip <?xml ?> edge cases
-        if self.data.starts_with("<?") {
-            return;
-        }
-        self.replace.get_or_insert_with(|| ParamMerger::new(&self.data));
-        self.replace.as_mut().map(|replace| replace.patch(&patch.data));
     }
 }
 

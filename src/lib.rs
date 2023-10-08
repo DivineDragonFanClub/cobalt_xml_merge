@@ -6,7 +6,6 @@ pub use line::Line;
 #[cfg(test)]
 mod tests;
 mod line;
-mod params;
 mod merger;
 
 type XmlLine<'a> = Cow<'a, str>; // can also use cow
