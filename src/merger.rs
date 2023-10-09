@@ -34,13 +34,16 @@ impl<'xml> Merger<'xml> {
         for span in differ.spans() {
             match span.tag {
                 Tag::Insert => {
+                    println!("inserting {}..{} above {}", span.b_start, span.b_end, span.a_start);
                     let line = &mut self.merge_arena[span.a_start];
                     line.insert_above(&patch[span.b_start..span.b_end]);
                 },
                 Tag::Delete => {
+                    println!("deleting {}..{}", span.a_start, span.a_end);
                     self.merge_arena[span.a_start..span.a_end].iter_mut().for_each(|line| line.deleted = true);
                 },
                 Tag::Replace => {
+                    println!("replacing {}..{} with {}..{}", span.a_start, span.a_end, span.b_start, span.b_end);
                     self.merge_arena[span.a_start..span.a_end].iter_mut().for_each(|line| line.deleted = true);
                     let line = &mut self.merge_arena[span.a_start];
                     line.insert_below(&patch[span.b_start..span.b_end]);

@@ -7,7 +7,7 @@ lazy_static::lazy_static! {
 }
 
 #[test]
-fn boamo() {
+fn boamo_solo() {
     let path_patches = [
         "test_files/AssetTable/Boamo.xml"
     ];

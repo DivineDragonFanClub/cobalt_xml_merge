@@ -19,7 +19,6 @@ pub enum CompareResult {
     NotEqualAt {left: CharIndex, right: CharIndex},
 }
 
-#[cfg(test)]
 impl CompareResult {
     pub fn test(&self) {
         match self {
