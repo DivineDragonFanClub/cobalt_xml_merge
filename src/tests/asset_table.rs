@@ -20,7 +20,7 @@ fn boamo() {
     let merged = merger.finalize();
 
     let boamo = read_fs_into_strs("test_files/AssetTable/Boamo.xml");
-    assert!(merged == boamo);
+    compare_non_whitespace(merged.join("\n"), boamo.join("\n")).test();
 }
 
 #[test]
@@ -38,7 +38,7 @@ fn playableboss() {
     let merged = merger.finalize();
 
     let playableboss = read_fs_into_strs("test_files/AssetTable/PlayableBoss.xml");
-    assert!(merged == playableboss);
+    compare_non_whitespace(merged.join("\n"), playableboss.join("\n")).test();
 }
 
 use crate::read_fs_into_strs;
@@ -59,7 +59,7 @@ fn boamo_playableboss() {
 
     let merged = merger.finalize();
     let boamo_playableboss = read_fs_into_strs("test_files/AssetTable/examples/Boamo_Playableboss.xml");
-    assert!(merged == boamo_playableboss);
+    compare_non_whitespace(merged.join("\n"), boamo_playableboss.join("\n")).test();
 }
 
 #[test]
@@ -78,5 +78,5 @@ fn boamo_siegfried() {
 
     let merged = merger.finalize();
     let boamo_playableboss = read_fs_into_strs("test_files/AssetTable/examples/Boamo_Siegfried.xml");
-    assert!(merged == boamo_playableboss);
+    compare_non_whitespace(merged.join("\n"), boamo_playableboss.join("\n")).test();
 }

@@ -22,7 +22,7 @@ impl<'xml> Line<'xml> {
     }
     /// trims whitespace from the input
     pub fn new(original: XmlLine<'xml>) -> Self {
-        let checksum = crc32fast::hash(original.as_bytes());
+        let checksum = crc32fast::hash(original.trim_end_matches("/>").trim().as_bytes());
         Self {
             data: original,
             deleted: false,
@@ -78,10 +78,9 @@ impl PartialEq for Line<'_> {
     fn eq(&self, other: &Self) -> bool {
         if self.checksum == other.checksum { return true }
         
-        if self.data.len() != other.data.len() { return false };
-
-        // really time consuming, leaving this out even for the case of collisions ig
-        // return self.data == other.data;
-        return false;
+        return match compare_non_whitespace(&self.data, &other.data) {
+            CompareResult::Equal => true,
+            _ => false,
+        };
     }
 }

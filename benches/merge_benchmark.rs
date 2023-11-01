@@ -32,7 +32,8 @@ fn bench_add_two(c: &mut Criterion) {
         
             merged = merger.finalize();
         });
-        assert!(merged == boamo_playableboss);
+        // right handside is missing xml
+        compare_non_whitespace(&merged[1..].join("\n"), boamo_playableboss.join("\n")).test();
     });
 }
 
