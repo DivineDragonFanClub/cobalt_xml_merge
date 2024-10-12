@@ -8,13 +8,18 @@ mod tests;
 mod line;
 mod merger;
 
+pub mod xml_parsing;
+
 type XmlLine<'a> = Cow<'a, str>; // can also use cow
 
-#[cfg(test)]
+//#[cfg(test)]
 pub fn read_fs_into_strs<'a>(path: impl AsRef<str>) -> Vec<String> {
     let file = std::fs::read_to_string(path.as_ref()).unwrap();
+
     slice(&file, |s| s.to_owned())
 }
+
+
 
 
 /// Merges a base string with a patch string.
@@ -46,7 +51,7 @@ fn slice<'a, T>(s: &'a str, map: impl Fn(&'a str) -> T) -> Vec<T> {
 
 /// Converts a string into a vector of lines. Trims whitespace from each line.
 pub fn str_to_lines(s: &'_ str) -> Vec<Line<'_>> {
-    slice(s, |s| Line::new(Cow::Borrowed(s)))
+    return slice(s, |s| Line::new(Cow::Borrowed(s)));
 }
 
 
