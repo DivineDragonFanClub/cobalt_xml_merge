@@ -1,8 +1,6 @@
-use std::{borrow::Cow, rc::Rc};
-
-#[derive(logos::Logos, Debug, PartialEq)]
+#[derive(logos::Logos, Debug, PartialEq, Hash)]
 #[logos(skip r"[ \r\t\f]+")] // Ignore this regex pattern between tokens
-pub enum XmlToken {
+pub enum XmlToken<'a> {
     #[token("<")]
     TagStart,
 
@@ -19,23 +17,34 @@ pub enum XmlToken {
     SelfClosing,
 
     /// Token for attribute names (identifiers), the tagname and attribute are found here
-    #[regex(r"[a-zA-Z][a-zA-Z0-9_:]*", |lex| to_u8_range(lex.span()))]
-    Identifier(std::ops::Range<u8>), 
+    #[regex(r"[a-zA-Z][a-zA-Z0-9_:]*", |lex| lex.slice())]
+    Identifier(&'a str), 
 
     /// Token for the equal sign between attribute name and value
     #[token("=")]
     Equals,
 
     /// Token for attribute values enclosed in double quotes
-    #[regex(r#""[^"]*""#, |lex| to_u8_range(lex.span()))]
-    AttributeValue(std::ops::Range<u8>),
+    #[regex(r#""[^"]*""#, |lex| lex.slice())]
+    AttributeValue(&'a str),
 }
 
-fn to_u8_range(range: std::ops::Range<usize>) -> std::ops::Range<u8> {
-    range.start as u8..range.end as u8
+impl std::fmt::Display for XmlToken<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            XmlToken::TagStart => write!(f, "<"),
+            XmlToken::TagEnd => write!(f, ">"),
+            XmlToken::ClosingTagStart => write!(f, "</"),
+            XmlToken::CommentStart => write!(f, "<!"),
+            XmlToken::SelfClosing => write!(f, "/>"),
+            XmlToken::Identifier(s) => write!(f, "{}", s),
+            XmlToken::Equals => write!(f, "="),
+            XmlToken::AttributeValue(s) => write!(f, "{} ", s),
+        }
+    }
 }
 
-pub fn next_token<'a>(lexer: &mut logos::Lexer<'a, XmlToken>) -> Option<XmlToken> {
+pub fn next_token<'a>(lexer: &mut logos::Lexer<'a, XmlToken<'a>>) -> Option<XmlToken<'a>> {
     while let Some(res) = lexer.next() {
         if let Ok(token) = res {
             return Some(token);

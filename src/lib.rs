@@ -28,7 +28,7 @@ pub fn read_fs_into_strs<'a>(path: impl AsRef<str>) -> Vec<String> {
 pub fn merge_all<T: AsRef<str>>(base: T, patches: &[T]) -> String {
     let mut merger = Merger::new(base.as_ref());
     for patch in patches {
-        merger.patch(patch.as_ref());
+        //merger.patch(patch.as_ref());
     }
     merger.finalize_string()
 }

@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 crc32fast = "1"
 differ = { git = "https://github.com/Level0r0s/differ" }
+imara-diff = "0.1.7"
+logos = "0.14.2"
 
 [dev-dependencies]
 criterion = "0.5"
@@ -15,7 +17,3 @@ lazy_static = "1"
 
 [profile.bench]
 lto = "thin"
-
-[[bench]]
-name = "merge_benchmark"
-harness = false
