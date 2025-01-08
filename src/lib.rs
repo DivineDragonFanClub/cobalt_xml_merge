@@ -8,7 +8,7 @@ mod tests;
 mod line;
 mod merger;
 
-type XmlLine<'a> = Cow<'a, str>; // can also use cow
+type XmlLine<'a> = &'a str; // can also use cow
 
 #[cfg(test)]
 pub fn read_fs_into_strs<'a>(path: impl AsRef<str>) -> Vec<String> {
@@ -47,7 +47,7 @@ fn slice<'a, T>(s: &'a str, map: impl Fn(&'a str) -> T) -> Vec<T> {
 
 /// Converts a string into a vector of lines. Trims whitespace from each line.
 pub fn str_to_lines(s: &'_ str) -> Vec<Line<'_>> {
-    slice(s, |s| Line::new(Cow::Borrowed(s)))
+    slice(s, |s| Line::new(s))
 }
 
 
