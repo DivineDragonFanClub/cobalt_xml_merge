@@ -4,6 +4,7 @@ use crate::*;
 pub struct Line<'xml> {
     data: XmlLine<'xml>,
     pub deleted: bool,
+    crc32: u32,
     pub front: Option<Vec<Line<'xml>>>,
     pub back: Option<Vec<Line<'xml>>>,
 }
@@ -14,15 +15,18 @@ impl<'xml> Line<'xml> {
         Self {
             data: "".into(),
             deleted: true,
+            crc32: 0,
             front: None,
             back: None,
         }
     }
     /// trims whitespace from the input
     pub fn new(original: XmlLine<'xml>) -> Self {
+        let crc32 = crc32fast::hash(original.trim_end_matches("/>").trim().as_bytes());
         Self {
             data: original,
             deleted: false,
+            crc32,
             front: None,
             back: None,
         }
@@ -66,15 +70,6 @@ impl<'xml> Line<'xml> {
         hunk
     }
 
-    /// Accounts for formatting inconsistencies (e.g. like Astra-XMLs).<br/>
-    /// ...var="" /><br/>
-    /// ...var=""/><br/>
-    /// Whitespace-sensitivity between attributes remains, but people seem to be consistent with it.
-    #[inline]
-    pub fn get_trimmed(&'xml self) -> &'xml str {
-        self.data.trim_end_matches("/>").trim()
-    }
-
     pub fn insert_above(&mut self, lines: &[Line<'xml>]) {
         let front = self.front.get_or_insert(Vec::new());
         for line in lines.iter().rev() {
@@ -92,13 +87,13 @@ impl<'xml> Line<'xml> {
 
 impl std::hash::Hash for Line<'_> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        state.write(self.get_trimmed().as_bytes());
+        state.write_u32(self.crc32);
     }
 }
 
 impl PartialEq for Line<'_> {
     fn eq(&self, other: &Self) -> bool {
-        if self.get_trimmed() == other.get_trimmed() { return true }
+        if self.crc32 == other.crc32 { return true }
         
         return match compare_non_whitespace(&self.data, &other.data) {
             CompareResult::Equal => true,
