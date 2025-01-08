@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 crc32fast = "1"
 differ = { git = "https://github.com/Level0r0s/differ" }
+memchr = "2.7.4"
 
 [dev-dependencies]
 criterion = "0.5"
