@@ -4,8 +4,8 @@ use crate::*;
 pub struct Line<'xml> {
     data: XmlLine<'xml>,
     pub deleted: bool,
-    pub front: Vec<Line<'xml>>,
-    pub back: Vec<Line<'xml>>,
+    pub front: Option<Vec<Line<'xml>>>,
+    pub back: Option<Vec<Line<'xml>>>,
 }
 
 impl<'xml> Line<'xml> {
@@ -14,8 +14,8 @@ impl<'xml> Line<'xml> {
         Self {
             data: "".into(),
             deleted: true,
-            front: Vec::new(),
-            back: Vec::new(),
+            front: None,
+            back: None,
         }
     }
     /// trims whitespace from the input
@@ -23,8 +23,8 @@ impl<'xml> Line<'xml> {
         Self {
             data: original,
             deleted: false,
-            front: Vec::new(),
-            back: Vec::new(),
+            front: None,
+            back: None,
         }
     }
 
@@ -34,19 +34,34 @@ impl<'xml> Line<'xml> {
     /// 
     /// meaning both appending and prepending retains the mod loading order
     pub fn to_hunk(self) -> Vec<XmlLine<'xml>> {
-        let mut hunk = Vec::with_capacity(
-            self.front.len() + self.back.len() + 1
-        );
-        for line in self.front.into_iter().rev() {
-            if line.deleted { continue; }
-            hunk.push(line.data);
+        let size_hint = {
+            let mut size = 0;
+            if let Some(v) = self.front.as_ref() {
+                size += v.len();
+            }
+            if let Some(v) = self.back.as_ref() {
+                size += v.len();
+            }
+            if !self.deleted {
+                size += 1;
+            }
+            size
+        };
+        let mut hunk = Vec::with_capacity(size_hint);
+        if let Some(v) = self.front {
+            for line in v.into_iter().rev() {
+                if line.deleted { continue; }
+                hunk.push(line.data);
+            }
         }
         if !self.deleted {
             hunk.push(self.data);
         }
-        for line in self.back.into_iter().rev() {
-            if line.deleted { continue; }
-            hunk.push(line.data);
+        if let Some(v) = self.back {
+            for line in v.into_iter().rev() {
+                if line.deleted { continue; }
+                hunk.push(line.data);
+            }
         }
         hunk
     }
@@ -61,14 +76,16 @@ impl<'xml> Line<'xml> {
     }
 
     pub fn insert_above(&mut self, lines: &[Line<'xml>]) {
+        let front = self.front.get_or_insert(Vec::new());
         for line in lines.iter().rev() {
-            self.front.push(line.clone());
+            front.push(line.clone());
         }
     }
     
     pub fn insert_below(&mut self, lines: &[Line<'xml>]) {
+        let back = self.back.get_or_insert(Vec::new());
         for line in lines.iter().rev() {
-            self.back.push(line.clone());
+            back.push(line.clone());
         }
     }
 }
