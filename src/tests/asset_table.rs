@@ -8,10 +8,11 @@ lazy_static::lazy_static! {
 
 #[test]
 fn boamo() {
-    let path_patches = [
-        "test_files/AssetTable/Boamo.xml"
-    ];
-    let patches = path_patches.iter().map(|path| std::fs::read_to_string(path).unwrap()).collect::<Vec<_>>();
+    let path_patches = ["test_files/AssetTable/Boamo.xml"];
+    let patches = path_patches
+        .iter()
+        .map(|path| std::fs::read_to_string(path).unwrap())
+        .collect::<Vec<_>>();
     let mut merger = Merger::new(&*ASSET_TABLE);
 
     for patch in &patches {
@@ -25,10 +26,11 @@ fn boamo() {
 
 #[test]
 fn playableboss() {
-    let path_patches = [
-        "test_files/AssetTable/PlayableBoss.xml"
-    ];
-    let patches = path_patches.iter().map(|path| std::fs::read_to_string(path).unwrap()).collect::<Vec<_>>();
+    let path_patches = ["test_files/AssetTable/PlayableBoss.xml"];
+    let patches = path_patches
+        .iter()
+        .map(|path| std::fs::read_to_string(path).unwrap())
+        .collect::<Vec<_>>();
     let mut merger = Merger::new(&*ASSET_TABLE);
 
     for patch in &patches {
@@ -47,9 +49,12 @@ use crate::read_fs_into_strs;
 fn boamo_playableboss() {
     let path_patches = [
         "test_files/AssetTable/Boamo.xml",
-        "test_files/AssetTable/PlayableBoss.xml"
+        "test_files/AssetTable/PlayableBoss.xml",
     ];
-    let patches = path_patches.iter().map(|path| std::fs::read_to_string(path).unwrap()).collect::<Vec<_>>();
+    let patches = path_patches
+        .iter()
+        .map(|path| std::fs::read_to_string(path).unwrap())
+        .collect::<Vec<_>>();
 
     let mut merger = Merger::new(&*ASSET_TABLE);
 
@@ -66,9 +71,12 @@ fn boamo_playableboss() {
 fn boamo_siegfried() {
     let path_patches = [
         "test_files/AssetTable/Boamo2.xml",
-        "test_files/AssetTable/Siegfried.xml"
+        "test_files/AssetTable/Siegfried.xml",
     ];
-    let patches = path_patches.iter().map(|path| std::fs::read_to_string(path).unwrap()).collect::<Vec<_>>();
+    let patches = path_patches
+        .iter()
+        .map(|path| std::fs::read_to_string(path).unwrap())
+        .collect::<Vec<_>>();
 
     let mut merger = Merger::new(&*ASSET_TABLE);
 

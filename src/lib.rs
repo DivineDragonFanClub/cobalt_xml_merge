@@ -1,10 +1,10 @@
-pub use merger::Merger;
 pub use line::Line;
+pub use merger::Merger;
 
-#[cfg(test)]
-mod tests;
 mod line;
 mod merger;
+#[cfg(test)]
+mod tests;
 
 type XmlLine<'a> = &'a str; // can also use cow
 
@@ -14,9 +14,8 @@ pub fn read_fs_into_strs<'a>(path: impl AsRef<str>) -> Vec<String> {
     slice(&file, |s| s.to_owned())
 }
 
-
 /// Merges a base string with a patch string.
-/// 
+///
 /// Trims whitespace on each line.
 pub fn merge_all<T: AsRef<str>>(base: T, patches: &[T]) -> String {
     let mut merger = Merger::new(base.as_ref());
@@ -34,8 +33,12 @@ fn slice<'a, T>(s: &'a str, map: impl Fn(&'a str) -> T) -> Vec<T> {
         let s = &s[last_pos..=pos];
         last_pos = pos + 1;
         let s = s.trim_start_matches(|c| c != '<');
-        if s.is_empty() { continue };
-        if s.starts_with("<!") { continue }; // skip comments
+        if s.is_empty() {
+            continue;
+        };
+        if s.starts_with("<!") {
+            continue;
+        }; // skip comments
         if s.starts_with("<") {
             v.push(map(s));
         };
@@ -48,17 +51,14 @@ pub fn str_to_lines(s: &'_ str) -> Vec<Line<'_>> {
     slice(s, Line::new)
 }
 
-
 type CharIndex = (usize, char);
 #[derive(Debug)]
 pub enum CompareResult {
     Equal,
     LeftOverflow(CharIndex),
     RightOverflow(CharIndex),
-    NotEqualAt {left: CharIndex, right: CharIndex},
+    NotEqualAt { left: CharIndex, right: CharIndex },
 }
-
-
 
 impl CompareResult {
     pub fn test(&self) {
@@ -70,7 +70,7 @@ impl CompareResult {
 }
 
 /// Compares two strings, ignoring whitespace.  
-/// 
+///
 /// returns the byte position of first mimmatch.
 pub fn compare_non_whitespace(lhs: impl AsRef<str>, rhs: impl AsRef<str>) -> CompareResult {
     let mut lhs = lhs.as_ref().char_indices();
@@ -84,9 +84,9 @@ pub fn compare_non_whitespace(lhs: impl AsRef<str>, rhs: impl AsRef<str>) -> Com
             (Some(l), None) => return CompareResult::LeftOverflow(l),
             (Some(l), Some(r)) => {
                 if l.1 != r.1 {
-                    return CompareResult::NotEqualAt {left: l, right: r};
+                    return CompareResult::NotEqualAt { left: l, right: r };
                 }
-            }
+            },
         }
     }
 

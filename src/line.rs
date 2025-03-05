@@ -20,6 +20,7 @@ impl<'xml> Line<'xml> {
             back: None,
         }
     }
+
     /// trims whitespace from the input
     pub fn new(original: XmlLine<'xml>) -> Self {
         let crc32 = crc32fast::hash(original.trim_end_matches("/>").trim().as_bytes());
@@ -33,9 +34,9 @@ impl<'xml> Line<'xml> {
     }
 
     /// Converts the line into a hunk of lines.
-    /// 
+    ///
     /// `[front3, front2, front1, original, back3, back2, back1]`
-    /// 
+    ///
     /// meaning both appending and prepending retains the mod loading order
     pub fn to_hunk(self) -> Vec<XmlLine<'xml>> {
         let size_hint = {
@@ -54,7 +55,9 @@ impl<'xml> Line<'xml> {
         let mut hunk = Vec::with_capacity(size_hint);
         if let Some(v) = self.front {
             for line in v.into_iter().rev() {
-                if line.deleted { continue; }
+                if line.deleted {
+                    continue;
+                }
                 hunk.push(line.data);
             }
         }
@@ -63,7 +66,9 @@ impl<'xml> Line<'xml> {
         }
         if let Some(v) = self.back {
             for line in v.into_iter().rev() {
-                if line.deleted { continue; }
+                if line.deleted {
+                    continue;
+                }
                 hunk.push(line.data);
             }
         }
@@ -76,7 +81,7 @@ impl<'xml> Line<'xml> {
             front.push(line.clone());
         }
     }
-    
+
     pub fn insert_below(&mut self, lines: &[Line<'xml>]) {
         let back = self.back.get_or_insert(Vec::new());
         for line in lines.iter().rev() {
@@ -93,8 +98,10 @@ impl std::hash::Hash for Line<'_> {
 
 impl PartialEq for Line<'_> {
     fn eq(&self, other: &Self) -> bool {
-        if self.crc32 == other.crc32 { return true }
-        
+        if self.crc32 == other.crc32 {
+            return true;
+        }
+
         matches!(compare_non_whitespace(self.data, other.data), CompareResult::Equal)
     }
 }

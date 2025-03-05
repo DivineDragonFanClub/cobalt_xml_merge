@@ -38,7 +38,10 @@ fn pre_append_sameline() {
         merger.patch(patch);
     }
 
-    assert!(merger.finalize_string() == Merger::new(r#"
+    assert!(
+        merger.finalize_string()
+            == Merger::new(
+                r#"
         <AssetTable>
             <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
             <Param Name="Alear" Type="Protag" Path="0" />
@@ -47,7 +50,10 @@ fn pre_append_sameline() {
             <Param Name="Clanne" Type="mage" Path="3" />
             <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
-    "#).finalize_string());
+    "#
+            )
+            .finalize_string()
+    );
 }
 
 #[test]
@@ -100,7 +106,10 @@ fn pre_append_sameline_empty_lines() {
         merger.patch(patch);
     }
 
-    assert!(merger.finalize_string() == Merger::new(r#"
+    assert!(
+        merger.finalize_string()
+            == Merger::new(
+                r#"
         <AssetTable>
             <Param Name="Veyle" Type="ProtagAlt" Path="0.1" />
             <Param Name="Alear" Type="Protag" Path="0" />
@@ -109,7 +118,10 @@ fn pre_append_sameline_empty_lines() {
             <Param Name="Clanne" Type="mage" Path="3" />
             <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
-    "#).finalize_string());
+    "#
+            )
+            .finalize_string()
+    );
 }
 
 #[test]
@@ -141,14 +153,17 @@ fn same_line_delete() {
             <Param Name="Clanne" Type="mage" Path="3" />
             <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
-        "#
+        "#,
     ];
 
     let mut merger = Merger::new(base);
     for patch in patches {
         merger.patch(patch);
     }
-    assert!(merger.finalize_string() == Merger::new(r#"
+    assert!(
+        merger.finalize_string()
+            == Merger::new(
+                r#"
         <AssetTable>
             <Param Name="Alear" Type="Protag" Path="0" />
             <Param Name="Griss" Type="Maso" Path="0.2" />
@@ -156,7 +171,10 @@ fn same_line_delete() {
             <Param Name="Clanne" Type="mage" Path="3" />
             <Param Name="Morb" Type="Goat" Path="69" />
         </AssetTable>
-        "#).finalize_string());
+        "#
+            )
+            .finalize_string()
+    );
 }
 
 // #[test]
