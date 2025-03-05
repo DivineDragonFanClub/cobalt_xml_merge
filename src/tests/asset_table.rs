@@ -1,10 +1,10 @@
+use std::sync::LazyLock;
+
 use crate::*;
 
 const ASSET_TABLE_PATH: &str = "test_files/AssetTable/!original.xml";
 
-lazy_static::lazy_static! {
-    static ref ASSET_TABLE: String = std::fs::read_to_string(ASSET_TABLE_PATH).unwrap();
-}
+static ASSET_TABLE: LazyLock<String> = LazyLock::new(|| std::fs::read_to_string(ASSET_TABLE_PATH).unwrap());
 
 #[test]
 fn boamo() {

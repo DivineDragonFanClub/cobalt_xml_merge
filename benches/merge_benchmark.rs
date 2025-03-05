@@ -1,4 +1,7 @@
-use std::borrow::Cow;
+use std::{
+    borrow::Cow,
+    sync::LazyLock,
+};
 
 use cobalt_xml_merge::*;
 use criterion::{
@@ -9,9 +12,7 @@ use criterion::{
 
 const ASSET_TABLE_PATH: &str = "test_files/AssetTable/!original.xml";
 
-lazy_static::lazy_static! {
-    static ref ASSET_TABLE: String = std::fs::read_to_string(ASSET_TABLE_PATH).unwrap();
-}
+static ASSET_TABLE: LazyLock<String> = LazyLock::new(|| std::fs::read_to_string(ASSET_TABLE_PATH).unwrap());
 
 criterion_group!(benches, bench_add_two);
 criterion_main!(benches);
