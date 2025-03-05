@@ -1,5 +1,3 @@
-use std::borrow::Cow;
-
 pub use merger::Merger;
 pub use line::Line;
 
@@ -47,7 +45,7 @@ fn slice<'a, T>(s: &'a str, map: impl Fn(&'a str) -> T) -> Vec<T> {
 
 /// Converts a string into a vector of lines. Trims whitespace from each line.
 pub fn str_to_lines(s: &'_ str) -> Vec<Line<'_>> {
-    slice(s, |s| Line::new(s))
+    slice(s, Line::new)
 }
 
 
@@ -93,12 +91,6 @@ pub fn compare_non_whitespace(lhs: impl AsRef<str>, rhs: impl AsRef<str>) -> Com
     }
 
     fn next(iter: &mut impl Iterator<Item = (usize, char)>) -> Option<(usize, char)> {
-        iter.skip_while(|(_, c)| match c {
-                ' ' | '\n' | '\t' | '\r' | '\u{feff}' => {
-                    true
-                },
-                _ => false
-            })
-            .next()
+        iter.find(|(_, c)| !matches!(c, ' ' | '\n' | '\t' | '\r' | '\u{feff}'))
     }
 }

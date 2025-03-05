@@ -13,7 +13,7 @@ impl<'xml> Line<'xml> {
     // line with no content, set to deleted by default so it is ignored
     pub fn empty() -> Self {
         Self {
-            data: "".into(),
+            data: "",
             deleted: true,
             crc32: 0,
             front: None,
@@ -95,9 +95,6 @@ impl PartialEq for Line<'_> {
     fn eq(&self, other: &Self) -> bool {
         if self.crc32 == other.crc32 { return true }
         
-        return match compare_non_whitespace(&self.data, &other.data) {
-            CompareResult::Equal => true,
-            _ => false,
-        };
+        matches!(compare_non_whitespace(self.data, other.data), CompareResult::Equal)
     }
 }
