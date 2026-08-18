@@ -1,13 +1,21 @@
-use imara_diff::intern::TokenSource;
+use imara_diff::intern::{
+    InternedInput,
+    Interner,
+    Token,
+};
 
 use crate::{
-    line::Line,
+    line::{
+        Line,
+        Tag,
+    },
     *,
 };
 
 pub struct Merger<'xml> {
-    base: Vec<Line<'xml>>,
     merge_arena: Vec<Line<'xml>>,
+    input: InternedInput<Tag<'xml>>,
+    base_tokens: Token,
 }
 
 impl<'xml> Merger<'xml> {
@@ -19,7 +27,20 @@ impl<'xml> Merger<'xml> {
     pub fn from(base: Vec<Line<'xml>>) -> Self {
         let mut merge_arena = base.clone();
         merge_arena.push(Line::empty()); // end of file appended lines will be stored here
-        Self { merge_arena, base }
+
+        let mut input = InternedInput {
+            before: Vec::with_capacity(base.len()),
+            after: Vec::with_capacity(base.len()),
+            interner: Interner::new(base.len() * 2),
+        };
+        input.update_before(base.iter().map(Line::tag));
+        let base_tokens = Token(input.interner.num_tokens());
+
+        Self {
+            merge_arena,
+            input,
+            base_tokens,
+        }
     }
 
     pub fn patch(&mut self, patch: &'xml str) {
@@ -30,14 +51,10 @@ impl<'xml> Merger<'xml> {
     pub fn patch_lines(&mut self, patch: Vec<Line<'xml>>) {
         let mut diffkinds = vec![];
 
-        let input = {
-            let old = TagSource(self.base.iter());
-            let new = TagSource(patch.iter());
-            imara_diff::intern::InternedInput::new(old, new)
-        };
+        self.input.update_after(patch.iter().map(Line::tag));
         imara_diff::diff(
             imara_diff::Algorithm::Myers,
-            &input,
+            &self.input,
             |before: std::ops::Range<u32>, after: std::ops::Range<u32>| {
                 let diffkind = match (before.len(), after.len()) {
                     (0, 0) => unreachable!(),
@@ -53,6 +70,7 @@ impl<'xml> Merger<'xml> {
                 diffkinds.push(diffkind);
             },
         );
+        self.input.interner.erase_tokens_after(self.base_tokens);
 
         for diffkind in diffkinds {
             fn range_into(range: std::ops::Range<u32>) -> std::ops::Range<usize> {
@@ -74,33 +92,23 @@ impl<'xml> Merger<'xml> {
                         .iter_mut()
                         .for_each(|line| line.deleted = true);
                     let line = &mut self.merge_arena[line_idx];
-                    line.insert_below(&patch[range_into(after)]);
+                    line.insert_below_overwrite(&patch[range_into(after)]);
                 },
             }
         }
     }
 
     pub fn finalize(self) -> Vec<XmlLine<'xml>> {
-        self.merge_arena.into_iter().flat_map(|line| line.to_hunk()).collect()
+        let mut out = Vec::with_capacity(self.merge_arena.iter().map(Line::hunk_len).sum());
+        for line in self.merge_arena {
+            line.write_hunk(&mut out);
+        }
+        out
     }
 
     /// joins the lines with line breaks
     pub fn finalize_string(self) -> String {
         self.finalize().join("\n")
-    }
-}
-
-struct TagSource<'a, T: Sized>(std::slice::Iter<'a, T>);
-impl<'xml, T: Sized + Eq + std::hash::Hash> TokenSource for TagSource<'xml, T> {
-    type Token = &'xml T;
-    type Tokenizer = std::slice::Iter<'xml, T>;
-
-    fn tokenize(&self) -> Self::Tokenizer {
-        std::slice::Iter::clone(&self.0)
-    }
-
-    fn estimate_tokens(&self) -> u32 {
-        self.0.len() as u32
     }
 }
 

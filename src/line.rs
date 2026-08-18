@@ -4,7 +4,7 @@ use crate::*;
 pub struct Line<'xml> {
     data: XmlLine<'xml>,
     pub deleted: bool,
-    crc32: u32,
+    norm: XmlLine<'xml>,
     pub front: Option<Vec<Line<'xml>>>,
     pub back: Option<Vec<Line<'xml>>>,
 }
@@ -15,7 +15,7 @@ impl<'xml> Line<'xml> {
         Self {
             data: "",
             deleted: true,
-            crc32: 0,
+            norm: "",
             front: None,
             back: None,
         }
@@ -23,14 +23,18 @@ impl<'xml> Line<'xml> {
 
     /// trims whitespace from the input
     pub fn new(original: XmlLine<'xml>) -> Self {
-        let crc32 = crc32fast::hash(original.trim_end_matches("/>").trim().as_bytes());
+        let norm = original.trim_end_matches("/>").trim();
         Self {
             data: original,
             deleted: false,
-            crc32,
+            norm,
             front: None,
             back: None,
         }
+    }
+
+    pub fn tag(&self) -> Tag<'xml> {
+        Tag { norm: self.norm }
     }
 
     /// Converts the line into a hunk of lines.
@@ -39,40 +43,32 @@ impl<'xml> Line<'xml> {
     ///
     /// meaning both appending and prepending retains the mod loading order
     pub fn to_hunk(self) -> Vec<XmlLine<'xml>> {
-        let size_hint = {
-            let mut size = 0;
-            if let Some(v) = self.front.as_ref() {
-                size += v.len();
-            }
-            if let Some(v) = self.back.as_ref() {
-                size += v.len();
-            }
-            if !self.deleted {
-                size += 1;
-            }
-            size
-        };
-        let mut hunk = Vec::with_capacity(size_hint);
+        let mut hunk = Vec::with_capacity(self.hunk_len());
+        self.write_hunk(&mut hunk);
+        hunk
+    }
+
+    pub fn hunk_len(&self) -> usize {
+        let mut size = usize::from(!self.deleted);
+        if let Some(v) = self.front.as_ref() {
+            size += v.len();
+        }
+        if let Some(v) = self.back.as_ref() {
+            size += v.len();
+        }
+        size
+    }
+
+    pub fn write_hunk(self, out: &mut Vec<XmlLine<'xml>>) {
         if let Some(v) = self.front {
-            for line in v.into_iter().rev() {
-                if line.deleted {
-                    continue;
-                }
-                hunk.push(line.data);
-            }
+            out.extend(v.into_iter().rev().filter(|l| !l.deleted).map(|l| l.data));
         }
         if !self.deleted {
-            hunk.push(self.data);
+            out.push(self.data);
         }
         if let Some(v) = self.back {
-            for line in v.into_iter().rev() {
-                if line.deleted {
-                    continue;
-                }
-                hunk.push(line.data);
-            }
+            out.extend(v.into_iter().rev().filter(|l| !l.deleted).map(|l| l.data));
         }
-        hunk
     }
 
     pub fn insert_above(&mut self, lines: &[Line<'xml>]) {
@@ -88,20 +84,59 @@ impl<'xml> Line<'xml> {
             back.push(line.clone());
         }
     }
+
+    pub fn insert_below_overwrite(&mut self, lines: &[Line<'xml>]) {
+        let same_block = self.block_tag();
+        let back = self.back.get_or_insert(Vec::new());
+        for line in lines.iter().rev() {
+            if same_block.is_some() && line.block_tag() == same_block {
+                if let Some(prev) = back.iter_mut().find(|prev| prev.block_tag() == same_block) {
+                    *prev = line.clone();
+                    continue;
+                }
+            }
+            back.push(line.clone());
+        }
+    }
+
+    fn block_tag(&self) -> Option<&'xml str> {
+        let line = self.data.trim();
+        let body = line.strip_prefix('<')?;
+        if body.starts_with('?') || body.starts_with('!') || line.ends_with("/>") {
+            return None;
+        }
+        let name_len = body
+            .find(|c: char| c.is_whitespace() || c == '>')
+            .unwrap_or(body.len());
+        Some(&body[..name_len])
+    }
+}
+
+#[derive(Eq, Clone, Copy, Debug)]
+pub struct Tag<'xml> {
+    norm: XmlLine<'xml>,
+}
+
+impl std::hash::Hash for Tag<'_> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        state.write(self.norm.as_bytes());
+    }
+}
+
+impl PartialEq for Tag<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.norm == other.norm
+    }
 }
 
 impl std::hash::Hash for Line<'_> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        state.write_u32(self.crc32);
+        self.tag().hash(state);
     }
 }
 
 impl PartialEq for Line<'_> {
     fn eq(&self, other: &Self) -> bool {
-        if self.crc32 == other.crc32 {
-            return true;
-        }
-
-        matches!(compare_non_whitespace(self.data, other.data), CompareResult::Equal)
+        self.tag() == other.tag()
     }
 }

@@ -1,3 +1,4 @@
+mod block_tags;
 mod asset_table;
 
 mod theoretical;

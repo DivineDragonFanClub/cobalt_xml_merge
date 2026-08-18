@@ -1,4 +1,7 @@
-pub use line::Line;
+pub use line::{
+    Line,
+    Tag,
+};
 pub use merger::Merger;
 
 mod line;
@@ -27,21 +30,20 @@ pub fn merge_all<T: AsRef<str>>(base: T, patches: &[T]) -> String {
 
 #[inline]
 fn slice<'a, T>(s: &'a str, map: impl Fn(&'a str) -> T) -> Vec<T> {
-    let mut v = Vec::with_capacity(1024); // hint size to avoid some reallocations
+    let bytes = s.as_bytes();
+    let mut v = Vec::with_capacity(s.len() / 128 + 16);
     let mut last_pos = 0;
-    for pos in memchr::memchr_iter(b'>', s.as_bytes()) {
-        let s = &s[last_pos..=pos];
+    for pos in memchr::memchr_iter(b'>', bytes) {
+        let chunk = &s[last_pos..=pos];
         last_pos = pos + 1;
-        let s = s.trim_start_matches(|c| c != '<');
-        if s.is_empty() {
+        let Some(start) = memchr::memchr(b'<', chunk.as_bytes()) else {
             continue;
         };
-        if s.starts_with("<!") {
+        let chunk = &chunk[start..];
+        if chunk.as_bytes().get(1) == Some(&b'!') {
             continue;
-        }; // skip comments
-        if s.starts_with("<") {
-            v.push(map(s));
-        };
+        } // skip comments
+        v.push(map(chunk));
     }
     v
 }
